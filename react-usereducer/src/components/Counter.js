@@ -1,46 +1,96 @@
-import { useState } from "react"
-// import Button from "./Button"
+import { useReducer } from "react"
 
 const Counter = ({ initialCount }) => {
-  const [ count, setCount ] = useState(initialCount)
-  const [ customAmount, setCustomAmount ] = useState(0)
 
-  const increment = () => {
-    setCount(count + 1)
+  const INCREMENT_COUNT = "increment-count"
+  const DECREMENT_COUNT = "decrement-count"
+  const CHANGE_CUSTOM_AMOUNT = "change-custom-amount"
+  const ADD_CUSTOM_AMOUNT = "add-custom-amount"
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case INCREMENT_COUNT:
+        return {
+          ...state,
+          count: state.count + 1
+        }
+      case DECREMENT_COUNT:
+        return {
+          ...state,
+          count: state.count - 1
+        }
+      case CHANGE_CUSTOM_AMOUNT:
+        return {
+          ...state,
+          customAmount: action.payload
+        }
+      case ADD_CUSTOM_AMOUNT:
+        return {
+          ...state,
+          count: state.count + action.payload,
+          customAmount: 0
+        }
+      default:
+        // throw new Error(`Unexpected action type: ${action.type}`)
+        return state
+    }
   }
 
-  const decrement = () => {
-    setCount(count - 1)
+  const [ state, dispatch ] = useReducer(reducer, {
+    count: initialCount,
+    customAmount: 0
+  })
+
+  const handleIncrement = (event) => {
+    dispatch({
+      type: INCREMENT_COUNT
+    })
   }
 
-  const handleCustomAmount = (event) => {
+  const handleDecrement = (event) => {
+    dispatch({
+      type: DECREMENT_COUNT
+    })
+  }
+  
+  const handleCustomAmountChange = (event) => {
     const value = parseInt(event.target.value) || 0
-    setCustomAmount(value)
+    dispatch({
+      type: CHANGE_CUSTOM_AMOUNT,
+      payload: value
+    })
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    setCount(count + customAmount)
-    setCustomAmount(0)
+    dispatch({
+      type: ADD_CUSTOM_AMOUNT,
+      payload: state.customAmount
+    })
   }
 
   return (
     <div>
-      <h1>Count is {count}</h1>
-      <button onClick={increment}>Increment</button>
-      <button onClick={decrement}>Decrement</button>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Add a custom amount</label>
-          <input
-            id="custom"
-            type="number"
-            value={customAmount || ""}
-            onChange={handleCustomAmount}
-            />
-        </div>
-        <button>Add!</button>
-      </form>
+      <h1>Count: {state.count}</h1>
+      <div>
+        <button onClick={handleIncrement}>Increment</button>
+        <button onClick={handleDecrement}>Decrement</button>
+      </div>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Add custom amount:</label>
+            <input
+              id="custom-amount"
+              type="number"
+              value={state.customAmount || ""}
+              onChange={handleCustomAmountChange}
+              />
+          </div>
+          <div>
+            <button>Add!</button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
