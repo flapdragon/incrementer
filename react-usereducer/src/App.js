@@ -3,7 +3,7 @@ import Counter from "./components/Counter"
 import './App.css'
 
 function App() {
-  const [ initialCount, setInitialCount ] = useState(0)
+  const [ initialCount, setInitialCount ] = useState(1)
   return (
     <div>
       <Counter initialCount={initialCount} />
